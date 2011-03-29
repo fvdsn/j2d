@@ -1,0 +1,27 @@
+J2D
+===
+
+This is a remake of the bastos85 engine, based on the experience I got
+using unity3d. It is written in java for portability, and for OOP. Not using
+a OOP language for Bastos85 was definitely a major mistake ! 
+
+It uses the lwjgl library, so you need to install it before trying to run
+anything
+
+License
+=======
+
+Unless specified otherwise, everything in the math,engine and 
+org packages are under the WTFPL.
+Unless specified otherwise, everything in game is for your eyes only. 
+Feel free to use it as an example of how to do your game tough ! But
+chances are that it will quickly be too big to be that good of an example.
+
+TODO
+====
+
+The engine uses several architecture tricks that are not very obvious, and
+the documentation is inexistant. Documentation will be added when the code
+maturity improves. 
+
+
