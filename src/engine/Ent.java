@@ -74,8 +74,7 @@ public class Ent {
 	public Vec2 getWPos(){	//TODO FIXME scale is wrong....
 		if(parent != null){
 			Vec2 pos = parent.getWPos();
-			pos.mult(parent.s);
-			pos.add(p);
+			pos.add(p.multn(parent.s));
 			return pos;
 		}else{
 			return p.dup();
