@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL11;
 import math.Color;
 import math.Vec2;
 
+/** This class is used to print debug message to the standard output */
 public class Dbg {
 	/** Turns on or off the debug messages */
 	public static boolean debug = true;

@@ -1,5 +1,6 @@
 package engine;
 
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import math.BBox;
@@ -12,9 +13,9 @@ public class Camera {
 	/** The pixel to world unit ratio: 1 => 1px = 1wu, 10 => 1px = 10wu */
 	protected float  	scale;
 	/** The near clip distance */
-	protected float   zNear = 1;
+	protected float   zNear = 100;
 	/** The far  clip distance */
-	protected float 	zFar  = -1;
+	protected float 	zFar  = -100;
 	/** The BBox of the viewed region in world space */
 	protected BBox	   	viewPort;
 	/** The background color of the viewport */
@@ -34,7 +35,7 @@ public class Camera {
 	}
 	
 	/** Changes the position of the center of the camera in world coordinates */
-	public void setPosition(Vec2 pos){
+	public void setPos(Vec2 pos){
 		this.p = pos;
 		viewPort = new BBox(p.x,
 							p.y,
@@ -42,7 +43,7 @@ public class Camera {
 							resolution.y * scale);
 	}
 	/** Returns the position of the center of the camera in world coordinates */
-	public Vec2 getPosition(){
+	public Vec2 getPos(){
 		return p.dup();
 	}
 	/** Changes the resolution of the camera. WARNING: this should only be done by the game engine */
@@ -103,17 +104,24 @@ public class Camera {
 	public void projectionSetup(){
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(viewPort.l(), viewPort.r(), viewPort.d(),viewPort.u(), zNear, zFar);
+		GL11.glOrtho(viewPort.l(), viewPort.r(), viewPort.d(),viewPort.u(), zFar, zNear);
 	}
 	/** Clears the OpenGL background */
 	public void backgroundSetup(){
 		GL11.glClearColor(bgColor.r, bgColor.g, bgColor.b, bgColor.a);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);	
+		//GL11.glEnable(GL11.GL_DEPTH_TEST);
 	}
 	public String toString(){
 		return "Camera{ pos:"+p+" scale:"+scale+" zNear:"+zNear+" zFar:"+zFar+" resolution:"+resolution+" viewPort:"+viewPort+" }";
 	}
-	
+	public Vec2   getMousePos(){
+		Vec2 pos = new Vec2(Mouse.getX(),Mouse.getY());
+		pos.sub(resolution.scalen(0.5f));
+		pos.scale(scale);
+		pos.add(p);
+		return pos;
+	}
 	/** This method is called just before the background and projection setup is done */
 	public void OnRenderSetup(){}
 	/** This method is called after all entities have been updated, and before they are rendered */

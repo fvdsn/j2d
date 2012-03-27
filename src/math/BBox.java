@@ -1,162 +1,109 @@
 package math;
 
 import org.lwjgl.opengl.GL11;
-
-public class BBox{
-	/** The position of the center of the BBox, in world coordinates */
-	public Vec2 p;		//position
+/**
+ * A BBox is an axis aligned bounding box. It is defined by its size and its center.
+ *
+ */
+public class BBox extends Bound{
 	/** The size of the BBox in world coordinates */
-	public Vec2 s;		//size
-	private Vec2 hs;	//half size
+	protected  float sizex = 1;		
+	protected  float sizey = 1;
+	/** Half the size of the BBox in world coordinates */
+	protected  float hsx   = 0.5f;
+	protected  float hsy   = 0.5f;
+
 	/** Instantiates a new BBox, with size (sx,sy) and position (0,0) */
 	public BBox(float sx, float sy){
-		p = new Vec2();
-		s = new Vec2(sx,sy);
-		hs = new Vec2(sx*0.5f,sy*0.5f);
+		super();
+		sizex = sx;
+		sizey = sy;
+		hsx = sizex * 0.5f;
+		hsy = sizey * 0.5f;
 	}
-	/** Instantiates a new BBox with size (size.x,size.y) and position (0,0) */
+	/** Instantiates a new BBox with size (sizex,sizey) and position (0,0) */
 	public BBox(Vec2 size){
-		p = new Vec2();
-		s = size.dup();
-		hs = new Vec2(s.x*0.5f,s.y*0.5f);
+		super();	
+		sizex = size.x;
+		sizey = size.y;
+		hsx = sizex * 0.5f;
+		hsy = sizey * 0.5f;
 	}
 	/** Instantiates a new BBox with size (sx,sy) and position (pos.x,pos.y) */
 	public BBox(Vec2 pos, float sx, float sy){
-		p = new Vec2(pos.x,pos.y);
-		s = new Vec2(sx,sy);
-		hs = new Vec2(sx*0.5f,sy*0.5f);
+		super(pos.x,pos.y);
+		sizex = sx;
+		sizey = sy;
+		hsx = sizex * 0.5f;
+		hsy = sizey * 0.5f;
 	}
-	/** Instantiates a new BBox with size (size.x,size.y) and position (pos.x,pos.y) */
+	/** Instantiates a new BBox with size (sizex,sizey) and position (pos.x,pos.y) */
 	public BBox(Vec2 pos, Vec2 size){
-		p = new Vec2(pos.x,pos.y);
-		s = size.dup();
-		hs = new Vec2(s.x*0.5f,s.y*0.5f);
+		super(pos.x,pos.y);
+		sizex = sizex;
+		sizey = sizey;
+		hsx = sizex * 0.5f;
+		hsy = sizey * 0.5f;
 	}
 	/** Instantiates a new BBox with size (sx,sy) and position (px,py) */
 	public BBox(float px, float py, float sx, float sy){
-		p = new Vec2(px,py);
-		s = new Vec2(sx,sy);
-		hs = new Vec2(sx*0.5f,sy*0.5f);
+		super(px,py);
+		sizex = sx;
+		sizey = sy;
+		hsx = sizex * 0.5f;
+		hsy = sizey * 0.5f;
 	}
-	/** Returns a new BBox that is a duplicate of this one */
+	/** Returns a new BBox that is a duplicate of this one. 
+	 * All parent/child relationships are lost */
 	public BBox dup(){
-		return new BBox(p,s);
+		return new BBox(px,py,sizex,sizey);
 	}
-	/** Returns a new BBox with the same size as this, but with position (dest.x,dest.y) */
+	/** Returns a new BBox with the same size as this, but with position (dest.x,dest.y).
+	 *  All parent/child relationships are lost */
 	public BBox dupAt(Vec2 dest){
-		return new BBox(dest,s);
+		return new BBox(dest.x,dest.y,sizex,sizey);
 	}
-	/** Changes the size of this BBox. WARNING: do not change the size of the BBox by changing ".s" ! */
-	public void resize(Vec2 newsize){
-		s = newsize.dup();
-		hs = new Vec2(newsize.x,newsize.y);
+	/** Changes the local size of this BBox to newsize */
+	public void setSize(Vec2 newsize){
+		sizex = newsize.x;
+		sizey = newsize.y;
+		hsx = newsize.x;
+		hsy = newsize.y;
 	}
-	/** Multiplies the size of this BBox by factor. WARNING: do not change the size of the BBox by changing ".s" ! */
-	public void scale(float factor){
-		s.scale(factor);
-		hs.scale(factor);
+	/** Returns the local size of this BBox */
+	public Vec2 getSize(){
+		return new Vec2(sizex,sizey);
 	}
-	/** Multiplies .s.x by factor.x and .s.y by factor.x. WARNING: do not change the size of the BBox by changing ".s" ! */
-	public void scale(Vec2 factor){
-		s.mult(factor);
-		hs.mult(factor);
+	/** Return the local size of this BBox on the X axis (width) */
+	public float getSizeX(){
+		return sizex;
 	}
-	/** Sets the position of the BBox to pos */
-	public void position(Vec2 pos){
-		p = pos.dup();
-	}
-	/** Moves the BBox by (disp.x,disp.y) */
-	public void move(Vec2 disp){
-		p.add(disp);
+	/** Return the local size of this BBox on the Y axis (height) */
+	public float getSizeY(){
+		return sizey;
 	}
 	/** Returns the x coord of 'left' side of the bbox, that is the minimum x coord in the BBox */
+	@Override
 	public float l(){
-		return p.x - hs.x;
+		return getPosX() - hsx * getScaleX();
 	}
 	/** Returns the x coord of 'right' side of the bbox, that is the maximum x coord in the BBox */
-
+	@Override
 	public float r(){
-		return p.x + hs.x;
+		return getPosX() + hsx * getScaleX();
 	}
 	/** Returns the y coord of 'up' side of the bbox, that is the maximum y coord in the BBox */
+	@Override
 	public float u(){
-		return p.y + hs.y;
+		return getPosY() + hsy * getScaleY();
 	}
 	/** Returns the y coord of 'down' side of the bbox, that is the minimum y coord in the BBox */
+	@Override
 	public float d(){
-		return p.y - hs.y;
+		return getPosY() - hsy * getScaleY();
 	}
-	/** Returns true if the position v is inside (boundaries included) of the BBox */
-	public boolean isIn(Vec2 v){
-		return 		v.x >= l() && v.x <= r()
-				&&	v.y >= d() && v.y <= u() ; 
-	}
-	/** Returns true if the BBox b is inside (boundaries included) of the BBox. (isIn(this) == true) */
-	public boolean isIn(BBox b){
-		return  	b.l() >= l()  && b.r() <= r()
-				&&  b.d() >= d() && b.u() <= u();
-	}
-	/** Returns true if the BBox b collides (boundaries excluded) with the BBox */
-	public boolean collides(BBox b){
-		boolean xcol = false;
-		boolean ycol = false;
-		xcol = (	( b.l() <= r() && b.r() > r()) 
-				|| 	( b.r() >= l() && b.l() < l())
-				||  ( b.l() >= l() && b.r() <= r()) );
-		
-		ycol = (	( b.d() <= u() && b.u() > u()) 
-				|| 	( b.u() >= d() && b.d() < d())
-				||  ( b.d() >= d() && b.u() <= u()) );
-		
-		return xcol && ycol;
-	}
-	/** Returns the vector (x,y) ;
-	 * 	- x is the minimum x coord displacement of this BBox to avoid collision with b.
-	 *  - y is the minimum y coord displacement of this BBox to avoid collision with b 
-	 *  Displacing the BBox by (x,0) or (0,y) is sufficient to avoid the collision.
-	 *  If x or y is 0.0, b does not collides with the BBox */
-	public Vec2 collisionVector(BBox b){
-		float xdist = 0.0f;
-		float ydist = 0.0f;
-		if(b.p.x > p.x){	// b is on the right
-			if(b.l() < r()){
-				xdist = - (r() - b.l());
-			}
-		}else{
-			if(b.r() > l()){
-				xdist = b.r() - l();
-			}
-		}
-		if(b.p.y > p.y){	// b is on the right
-			if(b.d() < u()){
-				ydist = - (u() - b.d());
-			}
-		}else{
-			if(b.u() > d()){
-				ydist = b.u() - d();
-			}
-		}
-		return new Vec2(xdist,ydist);
-	}
+	/** Returns a string representation of this BBox  */
 	public String toString(){
-		return "["+p.x+","+p.y+"|"+s.x+","+s.y+"]";
-	}
-	/** Draws a quad of position and dimensions of the BBox, at z coord 0.0 */
-	public void glDraw(){
-		GL11.glBegin(GL11.GL_QUADS);
-			GL11.glVertex2f((float)l(), (float)d());
-			GL11.glVertex2f((float)r(), (float)d());
-			GL11.glVertex2f((float)r(), (float)u());
-			GL11.glVertex2f((float)l(), (float)u());
-		GL11.glEnd();
-	}
-	/** Draws a quad of position and dimensions of the BBox, at z coord "z" */
-	public void glDraw(float z){
-		GL11.glBegin(GL11.GL_QUADS);
-			GL11.glVertex3f((float)l(), (float)d(),z);
-			GL11.glVertex3f((float)r(), (float)d(),z);
-			GL11.glVertex3f((float)r(), (float)u(),z);
-			GL11.glVertex3f((float)l(), (float)u(),z);
-		GL11.glEnd();
+		return "["+getPosX()+","+getPosY()+"|"+sizex+","+sizey+"]";
 	}
 }

@@ -11,7 +11,8 @@ public final class Color {
 	public static final Color gray  	= new Color(0.5f,0.5f,0.5f);
 	public static final Color darkgray  = new Color(0.25f,0.25f,0.25f);
 	public static final Color lightgray = new Color(0.75f,0.75f,0.75f);
-	public static final Color orange 	= new Color(1,1,0);
+	public static final Color orange 	= new Color(1,0.5f,0);
+	public static final Color yellow 	= new Color(1,1,0);
 	public static final Color purple 	= new Color(1,0,1);
 	public static final Color bluegreen = new Color(0,1,1);
 	public static final Color darkred	= new Color(0.5f,0,0);
